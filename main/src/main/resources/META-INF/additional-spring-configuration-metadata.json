@@ -1,0 +1,46 @@
+{
+  "properties": [
+    {
+      "name": "amadeus.api.url.authorize",
+      "type": "java.lang.String",
+      "description": "URL to get authorization token from Amadeus API",
+      "defaultValue": "https://test.api.amadeus.com/v1/security/oauth2/token"
+    },
+    {
+      "name": "amadeus.api.url.by.city",
+      "type": "java.lang.String",
+      "description": "URL to fetch hotels by city from Amadeus API",
+      "defaultValue": "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city"
+    },
+    {
+      "name": "amadeus.api.key",
+      "type": "java.lang.String",
+      "description": "API key for Amadeus service",
+      "defaultValue": "${AMADEUS_KEY}"
+    },
+    {
+      "name": "amadeus.api.secret",
+      "type": "java.lang.String",
+      "description": "API secret for Amadeus service",
+      "defaultValue": "${AMADEUS_SECRET}"
+    },
+    {
+      "name": "openai.api.model",
+      "type": "java.lang.String",
+      "description": "OpenAI model to use (e.g., gpt-4-turbo)",
+      "defaultValue": "gpt-4-turbo"
+    },
+    {
+      "name": "openai.api.url",
+      "type": "java.lang.String",
+      "description": "URL to send chat completion requests to OpenAI",
+      "defaultValue": "https://api.openai.com/v1/chat/completions"
+    },
+    {
+      "name": "openai.api.key",
+      "type": "java.lang.String",
+      "description": "API key for accessing OpenAI services",
+      "defaultValue": "${OPENAI_KEY}"
+    }
+  ]
+}
