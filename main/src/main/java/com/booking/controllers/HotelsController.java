@@ -18,12 +18,12 @@ public class HotelsController {
     private final AmadeusAiService amadeusAiService;
 
     @PostMapping
-    public AmadeusHotelsResponse getHotels(@RequestBody Map<String, String> params) {
+    public AmadeusHotelsResponse getHotelsByParams(@RequestBody Map<String, String> params) {
         return amadeusService.findHotelsByCity(params);
     }
 
     @GetMapping
-    public List<AmadeusRouteAdvice> getHotels(@RequestParam String prompt) {
+    public List<AmadeusRouteAdvice> getHotelsWithAi(@RequestParam String prompt) {
         return amadeusAiService.getAmadeusRouteAdvices(prompt);
     }
 }
