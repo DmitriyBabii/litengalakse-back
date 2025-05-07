@@ -1,6 +1,7 @@
-package com.booking.amadeus.services;
+package com.booking.external.amadeus.services;
 
-import com.booking.amadeus.models.dto.AmadeusAuthResponse;
+import com.booking.external.amadeus.models.dtos.auth.AmadeusAuthResponse;
+import com.booking.external.amadeus.models.dtos.hotel.AmadeusHotelsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,7 +88,7 @@ public class AmadeusService {
         return response.getAccessToken();
     }
 
-    public Map<String, String> findHotelsByCity(Map<String, String> params) {
+    public AmadeusHotelsResponse findHotelsByCity(Map<String, String> params) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(searchUrlByCity);
         params.forEach(builder::queryParam);
 
@@ -97,13 +98,11 @@ public class AmadeusService {
         headers.setBearerAuth(getAccessToken());
         HttpEntity<HttpHeaders> request = new HttpEntity<>(headers);
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> response = restTemplate.exchange(
+        return restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 request,
-                Map.class
+                AmadeusHotelsResponse.class
         ).getBody();
-        return response;
     }
 }

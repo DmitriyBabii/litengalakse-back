@@ -1,12 +1,13 @@
 package com.booking.controllers;
 
-import com.booking.amadeus.services.AmadeusService;
+import com.booking.external.amadeus.models.dtos.hotel.AmadeusHotelsResponse;
+import com.booking.external.amadeus.models.dtos.routes.AmadeusRouteAdvice;
+import com.booking.external.amadeus.services.AmadeusAiService;
+import com.booking.external.amadeus.services.AmadeusService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -14,9 +15,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class HotelsController {
     private final AmadeusService amadeusService;
+    private final AmadeusAiService amadeusAiService;
 
     @PostMapping
-    public Map<String, String> getHotels(@RequestBody Map<String, String> params) {
+    public AmadeusHotelsResponse getHotels(@RequestBody Map<String, String> params) {
         return amadeusService.findHotelsByCity(params);
+    }
+
+    @GetMapping
+    public List<AmadeusRouteAdvice> getHotels(@RequestParam String prompt) {
+        return amadeusAiService.findTravelRoutesByPrompt(prompt);
     }
 }

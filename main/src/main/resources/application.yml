@@ -18,5 +18,11 @@ amadeus:
       authorize: https://test.api.amadeus.com/v1/security/oauth2/token
       by:
         city: https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city
-    key: zZ8hSiZ94FgTf7GBgc6zKiG6GlbCeG8A
-    secret: ENgmvMhDhXcCDG9a
+    key: ${AMADEUS_KEY}
+    secret: ${AMADEUS_SECRET}
+
+openai:
+  api:
+    model: gpt-4-turbo
+    url: https://api.openai.com/v1/chat/completions
+    key: ${OPENAI_KEY}

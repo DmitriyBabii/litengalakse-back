@@ -1,4 +1,4 @@
-package com.booking.amadeus.models.dto;
+package com.booking.external.amadeus.models.dtos.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

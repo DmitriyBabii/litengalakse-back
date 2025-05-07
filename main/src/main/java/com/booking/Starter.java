@@ -1,6 +1,6 @@
 package com.booking;
 
-import com.booking.amadeus.services.AmadeusService;
+import com.booking.external.amadeus.services.AmadeusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
