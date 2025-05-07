@@ -1,6 +1,6 @@
 package com.booking.controllers;
 
-import com.booking.services.amadeus.AmadeusService;
+import com.booking.amadeus.services.AmadeusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

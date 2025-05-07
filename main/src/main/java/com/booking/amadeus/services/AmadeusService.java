@@ -1,6 +1,6 @@
-package com.booking.services.amadeus;
+package com.booking.amadeus.services;
 
-import com.booking.models.dtos.amadeus.AmadeusAuthResponse;
+import com.booking.amadeus.models.dto.AmadeusAuthResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

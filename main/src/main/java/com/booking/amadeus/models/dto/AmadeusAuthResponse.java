@@ -1,4 +1,4 @@
-package com.booking.models.dtos.amadeus;
+package com.booking.amadeus.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
