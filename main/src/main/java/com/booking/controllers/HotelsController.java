@@ -24,6 +24,6 @@ public class HotelsController {
 
     @GetMapping
     public List<AmadeusRouteAdvice> getHotels(@RequestParam String prompt) {
-        return amadeusAiService.findTravelRoutesByPrompt(prompt);
+        return amadeusAiService.getAmadeusRouteAdvices(prompt);
     }
 }
