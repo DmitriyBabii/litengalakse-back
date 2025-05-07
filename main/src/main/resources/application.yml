@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: MainHotel
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis_password
+
+
+amadeus:
+  api:
+    url:
+      authorize: https://test.api.amadeus.com/v1/security/oauth2/token
+      by:
+        city: https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city
+    key: zZ8hSiZ94FgTf7GBgc6zKiG6GlbCeG8A
+    secret: ENgmvMhDhXcCDG9a
