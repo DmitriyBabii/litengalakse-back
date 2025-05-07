@@ -36,11 +36,6 @@ public class OpenAiService {
 
 
     public OpenAiRequest buildRequest(List<OpenAiMessage> messages) {
-        return OpenAiRequest.builder()
-                .model(openAiProperties.getModel())
-                .messages(messages)
-                .maxTokens(MAX_TOKENS)
-                .temperature(TEMPERATURE)
-                .build();
+        return new OpenAiRequest(openAiProperties.getModel(), messages, MAX_TOKENS, TEMPERATURE);
     }
 }

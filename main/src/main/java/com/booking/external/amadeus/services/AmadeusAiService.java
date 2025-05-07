@@ -81,23 +81,17 @@ public class AmadeusAiService {
     }
 
     private static String extractContent(OpenAiResponse openAiResponse) {
-        List<OpenAiChoice> choices = openAiResponse.getChoices();
+        List<OpenAiChoice> choices = openAiResponse.choices();
         if (choices == null || choices.isEmpty()) {
             throw new IllegalStateException("OpenAI response does not contain any choices");
         }
-        return choices.getFirst().getMessage().getContent();
+        return choices.getFirst().message().content();
     }
 
     private static List<OpenAiMessage> getMessagesByPrompt(String prompt) {
         return List.of(
-                OpenAiMessage.builder()
-                        .role(MESSAGE_ROLE_SYSTEM)
-                        .content(AI_SYSTEM_PROMPT)
-                        .build(),
-                OpenAiMessage.builder()
-                        .role(MESSAGE_ROLE_USER)
-                        .content(prompt)
-                        .build()
+                new OpenAiMessage(MESSAGE_ROLE_SYSTEM, AI_SYSTEM_PROMPT),
+                new OpenAiMessage(MESSAGE_ROLE_USER, prompt)
         );
     }
 }
