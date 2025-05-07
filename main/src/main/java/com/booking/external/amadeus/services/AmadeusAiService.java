@@ -36,7 +36,6 @@ public class AmadeusAiService {
     public static final String RATINGS = "4,5";
     public static final String MESSAGE_ROLE_SYSTEM = "system";
     public static final String MESSAGE_ROLE_USER = "user";
-    // TODO temporary limit
     public static final int HOTEL_LIMIT = 10;
 
     private final ObjectMapper objectMapper;
