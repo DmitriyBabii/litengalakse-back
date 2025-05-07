@@ -55,7 +55,7 @@ public class AmadeusService {
             throw new RestClientException("Empty body from Amadeus authorization response");
         }
 
-        log.info("Successful authorization with token: {}", amadeusAuthResponse.getAccessToken());
+        log.info("Successful authorization with token: {}", amadeusAuthResponse.accessToken());
         return amadeusAuthResponse;
     }
 
@@ -82,10 +82,10 @@ public class AmadeusService {
 
         AmadeusAuthResponse response = authorize();
 
-        long ttl = Math.max(response.getExpiresIn() - TOKEN_EXPIRES_BUFFER, TOKEN_EXPIRES_MIN);
-        redisTemplate.opsForValue().set(TOKEN_KEY, response.getAccessToken(), Duration.ofSeconds(ttl));
+        long ttl = Math.max(response.expiresIn() - TOKEN_EXPIRES_BUFFER, TOKEN_EXPIRES_MIN);
+        redisTemplate.opsForValue().set(TOKEN_KEY, response.accessToken(), Duration.ofSeconds(ttl));
 
-        return response.getAccessToken();
+        return response.accessToken();
     }
 
     public AmadeusHotelsResponse findHotelsByCity(Map<String, String> params) {

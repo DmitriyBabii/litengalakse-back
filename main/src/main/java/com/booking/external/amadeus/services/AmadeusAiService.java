@@ -43,25 +43,25 @@ public class AmadeusAiService {
     private final AmadeusService amadeusService;
 
     public List<AmadeusRouteAdvice> getAmadeusRouteAdvices(String prompt) {
-        return getOpenAiRouteAdvices(prompt).getCities()
+        return getOpenAiRouteAdvices(prompt).cities()
                 .stream()
                 .map(city -> {
                     HashMap<String, String> params = generateRouteAdvice(city);
                     AmadeusHotelsResponse hotelsByCity = amadeusService.findHotelsByCity(params);
-                    List<AmadeusHotel> hotels = hotelsByCity.getData().stream().limit(HOTEL_LIMIT).toList();
-                    return AmadeusRouteAdvice.builder()
-                            .cityCode(city.getCityCode())
-                            .description(city.getDescription())
-                            .data(hotels)
-                            .meta(hotelsByCity.getMeta())
-                            .build();
+                    List<AmadeusHotel> hotels = hotelsByCity.data().stream().limit(HOTEL_LIMIT).toList();
+                    return new AmadeusRouteAdvice(
+                            city.cityCode(),
+                            city.description(),
+                            hotels,
+                            hotelsByCity.meta()
+                    );
                 })
                 .toList();
     }
 
     private static HashMap<String, String> generateRouteAdvice(AmadeusAiRoute city) {
         HashMap<String, String> params = new HashMap<>();
-        params.put("cityCode", city.getCityCode());
+        params.put("cityCode", city.cityCode());
         params.put("radius", RADIUS);
         params.put("ratings", RATINGS);
         return params;
