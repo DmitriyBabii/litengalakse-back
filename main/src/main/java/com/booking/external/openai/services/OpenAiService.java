@@ -1,5 +1,6 @@
 package com.booking.external.openai.services;
 
+import com.booking.configs.properties.OpenAiProperties;
 import com.booking.external.openai.models.dtos.OpenAiMessage;
 import com.booking.external.openai.models.dtos.OpenAiRequest;
 import com.booking.external.openai.models.dtos.OpenAiResponse;
@@ -19,30 +20,24 @@ public class OpenAiService {
     public static final int MAX_TOKENS = 500;
     public static final double TEMPERATURE = .2;
 
-    @Value("${openai.api.model}")
-    private String model;
-    @Value("${openai.api.url}")
-    private String url;
-    @Value("${openai.api.key}")
-    private String key;
-
+    private final OpenAiProperties openAiProperties;
     private final RestTemplate restTemplate;
 
     private HttpHeaders getAuthHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(key);
+        headers.setBearerAuth(openAiProperties.getKey());
         return headers;
     }
 
     public OpenAiResponse sendRequest(OpenAiRequest requestBody) {
         HttpEntity<OpenAiRequest> openAiRequest = new HttpEntity<>(requestBody, getAuthHeaders());
-        return restTemplate.postForObject(url, openAiRequest, OpenAiResponse.class);
+        return restTemplate.postForObject(openAiProperties.getUrl(), openAiRequest, OpenAiResponse.class);
     }
 
     public OpenAiRequest buildRequest() {
         return OpenAiRequest.builder()
-                .model(model)
+                .model(openAiProperties.getModel())
                 .messages(List.of(
                         OpenAiMessage.builder()
                                 .role("user")
@@ -56,7 +51,7 @@ public class OpenAiService {
 
     public OpenAiRequest buildRequest(List<OpenAiMessage> messages) {
         return OpenAiRequest.builder()
-                .model(model)
+                .model(openAiProperties.getModel())
                 .messages(messages)
                 .maxTokens(MAX_TOKENS)
                 .temperature(TEMPERATURE)
