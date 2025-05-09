@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -43,9 +44,9 @@ public class AmadeusAiService {
     private final AmadeusService amadeusService;
 
     public List<AmadeusRouteAdvice> getAmadeusRouteAdvices(String prompt) {
-        return getOpenAiRouteAdvices(prompt).cities()
+        List<CompletableFuture<AmadeusRouteAdvice>> list = getOpenAiRouteAdvices(prompt).cities()
                 .stream()
-                .map(city -> {
+                .map(city -> CompletableFuture.supplyAsync(() -> {
                     HashMap<String, String> params = generateRouteAdviceParams(city);
                     AmadeusHotelsResponse hotelsByCity = amadeusService.findHotelsByCity(params);
                     List<AmadeusHotel> hotels = hotelsByCity.data().stream().limit(HOTEL_LIMIT).toList();
@@ -55,7 +56,10 @@ public class AmadeusAiService {
                             hotels,
                             hotelsByCity.meta()
                     );
-                })
+                }))
+                .toList();
+        return list.stream()
+                .map(CompletableFuture::join)
                 .toList();
     }
 
