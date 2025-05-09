@@ -46,7 +46,7 @@ public class AmadeusAiService {
         return getOpenAiRouteAdvices(prompt).cities()
                 .stream()
                 .map(city -> {
-                    HashMap<String, String> params = generateRouteAdvice(city);
+                    HashMap<String, String> params = generateRouteAdviceParams(city);
                     AmadeusHotelsResponse hotelsByCity = amadeusService.findHotelsByCity(params);
                     List<AmadeusHotel> hotels = hotelsByCity.data().stream().limit(HOTEL_LIMIT).toList();
                     return new AmadeusRouteAdvice(
@@ -59,7 +59,7 @@ public class AmadeusAiService {
                 .toList();
     }
 
-    private static HashMap<String, String> generateRouteAdvice(AmadeusAiRoute city) {
+    private static HashMap<String, String> generateRouteAdviceParams(AmadeusAiRoute city) {
         HashMap<String, String> params = new HashMap<>();
         params.put("cityCode", city.cityCode());
         params.put("radius", RADIUS);
