@@ -1,6 +1,12 @@
 {
   "properties": [
     {
+      "name": "amadeus.aspect.timer",
+      "type": "java.lang.Boolean",
+      "description": "Boolean to set timer on or off",
+      "defaultValue": "false"
+    },
+    {
       "name": "amadeus.api.url.authorize",
       "type": "java.lang.String",
       "description": "URL to get authorization token from Amadeus API",
