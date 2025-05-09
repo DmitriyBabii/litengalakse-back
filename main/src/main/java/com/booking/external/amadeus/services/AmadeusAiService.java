@@ -5,6 +5,7 @@ import com.booking.external.amadeus.models.dtos.hotel.AmadeusHotelsResponse;
 import com.booking.external.amadeus.models.dtos.routes.AmadeusAiRoute;
 import com.booking.external.amadeus.models.dtos.routes.AmadeusAiRoutesResponse;
 import com.booking.external.amadeus.models.dtos.routes.AmadeusRouteAdvice;
+import com.booking.external.amadeus.models.enums.Amenities;
 import com.booking.external.openai.models.dtos.OpenAiChoice;
 import com.booking.external.openai.models.dtos.OpenAiMessage;
 import com.booking.external.openai.models.dtos.OpenAiRequest;
@@ -16,29 +17,36 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AmadeusAiService {
-    private static final String AI_SYSTEM_PROMPT = """
-            You are traveler helper.
-            You must help with finding places to stay.
-            User will give you request and your job is to response with json only:
-            {"cities":[{"cityCode":string,"description":string}]}
-            cities: cities that you advise to visit, there could be many cities if its needed for user prompt (max count of cities is 5)
-            description: you must describe why you choose it shortly
-            Yor response always must be on english
-            """;
+    private static final String AI_SYSTEM_PROMPT = String.format(
+            """
+                    You are traveler helper.
+                    You must help with finding places to stay.
+                    User will give you request and your job is to response with json only:
+                    {"cities":[{"cityCode":string,"description":string,"amenities":string[]}]}
+                    cities: cities that you advise to visit, there could be many cities if its needed for user prompt (max count of cities is 5)
+                    description: you must describe why you choose it shortly
+                    amenities: amenities you can add if its fits user query, amenities available:[%s]
+                    Yor response always must be on english
+                    """,
+            Arrays.stream(Amenities.values())
+                    .map(Amenities::name)
+                    .collect(Collectors.joining(","))
+    );
     public static final String RADIUS = "5";
     public static final String RATINGS = "4,5";
     public static final String MESSAGE_ROLE_SYSTEM = "system";
     public static final String MESSAGE_ROLE_USER = "user";
-    public static final int HOTEL_LIMIT = 10;
-
+    public static final int HOTEL_LIMIT = 5;
     private final ObjectMapper objectMapper;
     private final OpenAiService openAiService;
     private final AmadeusService amadeusService;
@@ -50,12 +58,13 @@ public class AmadeusAiService {
                     HashMap<String, String> params = generateRouteAdviceParams(city);
                     AmadeusHotelsResponse hotelsByCity = amadeusService.findHotelsByCity(params);
                     List<AmadeusHotel> hotels = hotelsByCity.data().stream().limit(HOTEL_LIMIT).toList();
-                    return new AmadeusRouteAdvice(
-                            city.cityCode(),
-                            city.description(),
-                            hotels,
-                            hotelsByCity.meta()
-                    );
+                    return AmadeusRouteAdvice.builder()
+                            .cityCode(city.cityCode())
+                            .description(city.description())
+                            .amenities(city.amenities())
+                            .data(hotels)
+                            .meta(hotelsByCity.meta())
+                            .build();
                 }))
                 .toList();
         return list.stream()
@@ -68,6 +77,7 @@ public class AmadeusAiService {
         params.put("cityCode", city.cityCode());
         params.put("radius", RADIUS);
         params.put("ratings", RATINGS);
+        params.put("amenities", String.join(",", city.amenities()));
         return params;
     }
 
