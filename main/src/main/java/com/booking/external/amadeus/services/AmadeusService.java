@@ -24,10 +24,12 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class AmadeusService {
-    public static final String REDIS_KEY_PREFIX = "auth:";
-    public static final String TOKEN_KEY = REDIS_KEY_PREFIX + "token";
-    public static final long TOKEN_EXPIRES_BUFFER = 60L;
-    public static final long TOKEN_EXPIRES_MIN = 5L;
+    private static final String REDIS_KEY_PREFIX = "auth:";
+    private static final String TOKEN_KEY = REDIS_KEY_PREFIX + "token";
+    private static final long TOKEN_EXPIRES_BUFFER = 60L;
+    private static final long TOKEN_EXPIRES_MIN = 5L;
+
+    private final Object authLock = new Object();
 
 
     @Value("${amadeus.api.key}")
@@ -80,12 +82,20 @@ public class AmadeusService {
             return token;
         }
 
-        AmadeusAuthResponse response = authorize();
+        synchronized (authLock) {
+            token = redisTemplate.opsForValue().get(TOKEN_KEY);
 
-        long ttl = Math.max(response.expiresIn() - TOKEN_EXPIRES_BUFFER, TOKEN_EXPIRES_MIN);
-        redisTemplate.opsForValue().set(TOKEN_KEY, response.accessToken(), Duration.ofSeconds(ttl));
+            if (token != null) {
+                return token;
+            }
 
-        return response.accessToken();
+            AmadeusAuthResponse response = authorize();
+
+            long ttl = Math.max(response.expiresIn() - TOKEN_EXPIRES_BUFFER, TOKEN_EXPIRES_MIN);
+            redisTemplate.opsForValue().set(TOKEN_KEY, response.accessToken(), Duration.ofSeconds(ttl));
+
+            return response.accessToken();
+        }
     }
 
     public AmadeusHotelsResponse findHotelsByCity(Map<String, String> params) {
