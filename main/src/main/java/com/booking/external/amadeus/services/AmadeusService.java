@@ -55,7 +55,7 @@ public class AmadeusService {
             throw new RestClientException("Empty body from Amadeus authorization response");
         }
 
-        log.info("Successful authorization with token: {}", amadeusAuthResponse.accessToken());
+        log.info("Successful amadeus authorization with token: {}", amadeusAuthResponse.accessToken());
         return amadeusAuthResponse;
     }
 
