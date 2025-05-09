@@ -14,7 +14,7 @@ spring:
 
 amadeus:
   aspect:
-    timer: false
+    timer: true
   api:
     url:
       authorize: https://test.api.amadeus.com/v1/security/oauth2/token
