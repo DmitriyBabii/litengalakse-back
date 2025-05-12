@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class AmadeusAiService {
                     User will give you request and your job is to response with json only:
                     {"cities":[{"cityCode":string,"description":string,"amenities":string[]}]}
                     cities: cities that you advise to visit, there could be many cities if its needed for user prompt (max count of cities is 5)
+                    cityCode: city code must be with standard of IATA only
                     description: you must describe why you choose it shortly
                     amenities: amenities you can add if its fits user query, amenities available:[%s]
                     Yor response always must be on english
@@ -52,23 +54,29 @@ public class AmadeusAiService {
     private final AmadeusService amadeusService;
 
     public List<AmadeusRouteAdvice> getAmadeusRouteAdvices(String prompt) {
-        List<CompletableFuture<AmadeusRouteAdvice>> list = getOpenAiRouteAdvices(prompt).cities()
+        List<CompletableFuture<Optional<AmadeusRouteAdvice>>> list = getOpenAiRouteAdvices(prompt).cities()
                 .stream()
                 .map(city -> CompletableFuture.supplyAsync(() -> {
-                    HashMap<String, String> params = generateRouteAdviceParams(city);
-                    AmadeusHotelsResponse hotelsByCity = amadeusService.findHotelsByCity(params);
-                    List<AmadeusHotel> hotels = hotelsByCity.data().stream().limit(HOTEL_LIMIT).toList();
-                    return AmadeusRouteAdvice.builder()
-                            .cityCode(city.cityCode())
-                            .description(city.description())
-                            .amenities(city.amenities())
-                            .data(hotels)
-                            .meta(hotelsByCity.meta())
-                            .build();
+                    try {
+                        HashMap<String, String> params = generateRouteAdviceParams(city);
+                        AmadeusHotelsResponse hotelsByCity = amadeusService.findHotelsByCity(params);
+                        List<AmadeusHotel> hotels = hotelsByCity.data().stream().limit(HOTEL_LIMIT).toList();
+                        return Optional.of(AmadeusRouteAdvice.builder()
+                                .cityCode(city.cityCode())
+                                .description(city.description())
+                                .amenities(city.amenities())
+                                .data(hotels)
+                                .meta(hotelsByCity.meta())
+                                .build());
+                    } catch (Exception e) {
+                        log.warn("Failed to get hotels for city: {}", city.cityCode(), e);
+                    }
+                    return Optional.<AmadeusRouteAdvice>empty();
                 }))
                 .toList();
         return list.stream()
                 .map(CompletableFuture::join)
+                .flatMap(Optional::stream)
                 .toList();
     }
 
