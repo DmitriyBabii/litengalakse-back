@@ -1,0 +1,27 @@
+services:
+  app-main:
+    build:
+      context: .
+      dockerfile: main/Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - AMADEUS_KEY=${AMADEUS_KEY}
+      - AMADEUS_SECRET=${AMADEUS_SECRET}
+      - OPENAI_KEY=${OPENAI_KEY}
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+    networks:
+      - hotel-network
+  redis:
+    image: redis
+    command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}" ]
+    restart: unless-stopped
+    networks:
+      - hotel-network
+
+networks:
+  hotel-network:
+    external: true
